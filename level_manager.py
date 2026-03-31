@@ -11,10 +11,15 @@ from DropEnemy import DropEnemy
 from ChaseEnemy import ChaseEnemy
 from DashTrap import DashTrap
 
+#  thêm dòng này
+from data_manager import save_player_score
+
 
 class LevelManager:
-    def __init__(self):
+    def __init__(self, player_name="Guest"):
         self.level = 0
+        self.player_name = player_name   # ⭐ thêm
+        self.score = 0                   # ⭐ thêm
         self.level_folder = "levels"
 
         self.all_sprites = pygame.sprite.Group()
@@ -56,7 +61,6 @@ class LevelManager:
 
         self.all_sprites.add(self.player)
 
-
         # traps
         for t in data["traps"]:
             trap = None
@@ -73,12 +77,13 @@ class LevelManager:
                     trigger_range=t.get("trigger_range", 80)
                 )
 
-            self.traps.add(trap)
-            self.all_sprites.add(trap)
+            if trap is not None:
+                self.traps.add(trap)
+                self.all_sprites.add(trap)
 
         # enemies
         for e in data["enemies"]:
-            enemy = None   # ← QUAN TRỌNG
+            enemy = None
 
             if e["type"] == "patrol":
                 enemy = PatrolEnemy(
@@ -116,7 +121,7 @@ class LevelManager:
         # update player
         self.player.update()
 
-        # update enemies (cần player)
+        # update enemies
         for enemy in self.enemies:
             enemy.update(self.player)
 
@@ -127,32 +132,42 @@ class LevelManager:
             else:
                 trap.update()
 
-        # chết
-        # collision
+        # collision chết
         if not self.player.dead:
-
             if (
                 pygame.sprite.spritecollide(self.player, self.traps, False)
                 or pygame.sprite.spritecollide(self.player, self.enemies, False)
             ):
                 self.player.die()
 
-        # nếu chết -> đợi animation xong
-        # nếu player chết
+        # xử lý chết
         if self.player.dead:
-
             death_anim = self.player.animations["death"]
 
             if death_anim.finished:
                 self.load_level(self.level)
 
-        # qua level
+        # ⭐⭐⭐ SỬA DUY NHẤT Ở ĐÂY ⭐⭐⭐
         if pygame.sprite.spritecollide(self.player, self.goals, False):
-            self.level += 1
-            self.load_level(self.level)
 
-    #def draw(self, screen):
-     #   self.all_sprites.draw(screen)
+            self.score += 100  # ⭐ cộng điểm
+            self.level += 1
+
+            path = os.path.join(self.level_folder, f"level_{self.level}.json")
+
+            # nếu hết level -> WIN
+            if not os.path.exists(path):
+                print("🎉 WIN GAME")
+
+                save_player_score(self.player_name, self.score)
+
+                # reset game
+                self.level = 0
+                self.score = 0
+                self.load_level(self.level)
+            else:
+                self.load_level(self.level)
+
     def draw(self, screen):
         for sprite in self.all_sprites:
             if hasattr(sprite, "draw"):

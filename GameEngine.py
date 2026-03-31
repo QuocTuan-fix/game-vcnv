@@ -1,6 +1,8 @@
 import pygame
 from level_manager import LevelManager
 from LevelSelect import LevelSelect
+from input_name import get_player_name
+from leaderboard import show_leaderboard
 
 
 class Game:
@@ -33,7 +35,10 @@ class Game:
 
         # ===== SYSTEMS =====
         self.level_select = LevelSelect(total_levels=5)
-        self.level_manager = LevelManager()
+        # nhập tên người chơi trước
+        self.player_name = get_player_name(self.screen)
+
+        self.level_manager = LevelManager(self.player_name)
 
     def run(self):
 
@@ -69,6 +74,9 @@ class Game:
 
                         if event.key == pygame.K_n:
                             self.level_manager.next_level()
+                        
+                        if event.key == pygame.K_l:
+                            show_leaderboard(self.screen)
 
             # ===== UPDATE =====
             if self.state == self.PLAYING:
