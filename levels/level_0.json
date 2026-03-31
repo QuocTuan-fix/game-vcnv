@@ -1,0 +1,21 @@
+{
+  "player_start": [100, 300],
+
+  "traps": [
+    { "type": "spike", "x": 400, "y": 390 }],
+
+  "enemies": [
+    {
+      "type": "patrol",
+      "x": 200,
+      "y": 350,
+      "left": 150,
+      "right": 500,
+      "speed": 2
+    }
+  ],
+
+  "goals": [
+    {"type": "goal", "x": 600, "y": 365 }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+    "player_start": [100, 300],
+  
+    "traps": [
+      {
+        "type": "spike",
+        "x": 500,
+        "y": 390
+      },
+      {
+        "type": "dash",
+        "x": 300,
+        "y": 390,
+        "direction": "right",
+        "speed": 8,
+        "dash_distance": 120,
+        "trigger_range": 80
+      }
+    ],
+  
+    "enemies": [
+      {
+        "type": "drop",
+        "x": 350,
+        "y": 0,
+        "trigger_range": 100
+      }
+    ],
+  
+    "goals": [
+      {"type": "goal", "x": 600, "y": 365 }
+    ]
+  }
