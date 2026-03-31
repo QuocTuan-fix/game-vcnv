@@ -21,12 +21,12 @@ class Game:
 
         # ===== BACKGROUND =====
         self.background = pygame.image.load(
-            "assets/background/bg.png"
+            "assets/background/background.png"
         ).convert()
 
-        self.background = pygame.transform.scale(
+        self.background = pygame.transform.smoothscale(
             self.background, (800, 450)
-        )
+        )       
 
         # ===== STATE =====
         self.state = self.MENU

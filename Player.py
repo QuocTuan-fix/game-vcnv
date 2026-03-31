@@ -90,8 +90,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.y += self.vel_y
 
         # ===== GROUND =====
-        if self.rect.bottom >= 420:
-            self.rect.bottom = 420
+        if self.rect.bottom >= 322:
+            self.rect.bottom = 322
             self.vel_y = 0
             self.on_ground = True
 
@@ -117,7 +117,9 @@ class Player(pygame.sprite.Sprite):
 
         anim = self.animations[self.state]
         anim.update()
-        self.image = anim.get()
+
+        frame = anim.get()
+        self.image = pygame.transform.smoothscale(frame, (86, 86)) 
 
     # ======================
     # DRAW
@@ -126,7 +128,7 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen):
 
         # sprite lớn hơn hitbox
-        draw_x = self.rect.x - 16
-        draw_y = self.rect.y - 16
+        draw_x = self.rect.x - 32
+        draw_y = self.rect.y - 32
 
         screen.blit(self.image, (draw_x, draw_y))

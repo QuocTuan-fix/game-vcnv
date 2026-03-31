@@ -9,6 +9,7 @@ class Goal(pygame.sprite.Sprite):
 
         self.image = pygame.transform.scale(frames[0], (39, 64))
         self.rect = self.image.get_rect(topleft=(x, y))
+        self.rect.bottom = 332
 
         
 

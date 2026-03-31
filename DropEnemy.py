@@ -50,8 +50,8 @@ class DropEnemy(Enemy):
             self.vel_y += self.gravity
             self.rect.y += self.vel_y
 
-            if self.rect.bottom >= 420:
-                self.rect.bottom = 420
+            if self.rect.bottom >= 327:
+                self.rect.bottom = 327
                 self.vel_y = 0
                 self.active = False
 

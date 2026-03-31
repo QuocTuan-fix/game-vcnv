@@ -9,6 +9,7 @@ class Spike(pygame.sprite.Sprite):
 
         # ===== HITBOX =====
         self.rect = pygame.Rect(x, y, 39, 64)
+        
 
         # ===== IMAGE =====
         frames = load_sprite_sheet("assets/trap/spike.png", 32, 32)

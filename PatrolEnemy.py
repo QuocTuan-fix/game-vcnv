@@ -10,6 +10,7 @@ class PatrolEnemy(Enemy):
         super().__init__(x, y)
 
         self.rect = pygame.Rect(x, y, 8, 8)
+        self.rect.bottom = 280
 
         self.animation = Animation(
             load_sprite_sheet("assets/enemy/patrol/Bat.png", 16, 16),
