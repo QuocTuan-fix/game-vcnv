@@ -1,6 +1,7 @@
 import pygame
 from Enemy import Enemy
-
+from spritesheet import load_sprite_sheet
+from Animation import Animation
 
 class DashTrap(Enemy):
 
@@ -51,6 +52,19 @@ class DashTrap(Enemy):
         self.fake_time = 30
         self.fake_timer = 0
 
+        # ===== IMAGE =====
+        frames = load_sprite_sheet("assets/trap/stone.png", 64, 62)
+        self.image = frames[0]
+        self.rect = pygame.Rect(x, 0, 40, 40)
+
+        self.rect.bottom = 325
+        self.start_x = x
+    
+    def draw(self, screen):
+        draw_x = self.rect.x
+        draw_y = self.rect.bottom - self.image.get_height()
+        screen.blit(self.image, (draw_x, draw_y))
+
     def update(self, player):
 
         if self.state == self.IDLE:
@@ -100,7 +114,7 @@ class DashTrap(Enemy):
     def dash(self):
 
         self.rect.x += self.speed * self.dir
-        self.moved += self.speed
+        self.moved += abs(self.speed)
 
         if self.moved >= self.dash_distance:
             self.state = self.COOLDOWN
@@ -108,7 +122,17 @@ class DashTrap(Enemy):
 
     def cooldown(self):
 
-        self.cooldown_timer -= 1
+        # quay về vị trí ban đầu
+        if abs(self.rect.x - self.start_x) > self.speed:
 
-        if self.cooldown_timer <= 0:
-            self.state = self.IDLE
+            if self.rect.x > self.start_x:
+                self.rect.x -= self.speed
+            else:
+                self.rect.x += self.speed
+
+        else:
+            self.rect.x = self.start_x
+            self.cooldown_timer -= 1
+
+            if self.cooldown_timer <= 0:
+                self.state = self.IDLE
