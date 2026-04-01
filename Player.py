@@ -34,8 +34,8 @@ class Player(pygame.sprite.Sprite):
         self.vel_x = 0
         self.vel_y = 0
 
-        self.speed = 5
-        self.jump_power = -12
+        self.speed = 8
+        self.jump_power = -15
 
         self.on_ground = False
         self.dead = False
