@@ -12,7 +12,7 @@ from ChaseEnemy import ChaseEnemy
 from DashTrap import DashTrap
 
 #  thêm dòng này
-from data_manager import save_player_score
+from firebase_manager import save_progress
 
 
 class LevelManager:
@@ -31,6 +31,10 @@ class LevelManager:
         self.all_sprites.add(self.player)
 
         self.load_level(self.level)
+        self.game_won = False
+        self.win_option = 0 
+        self.deaths = 0
+        self.max_level_unlocked = 0
 
     def load_level(self, level_index):
         # clear
@@ -42,7 +46,6 @@ class LevelManager:
         # load json
         path = os.path.join(self.level_folder, f"level_{level_index}.json")
         if not os.path.exists(path):
-            self.level = 0
             path = os.path.join(self.level_folder, "level_0.json")
 
         with open(path, "r") as f:
@@ -118,6 +121,8 @@ class LevelManager:
                 self.all_sprites.add(goal)
 
     def update(self):
+        if self.game_won:
+            return
         # update player
         self.player.update()
 
@@ -139,6 +144,7 @@ class LevelManager:
                 or pygame.sprite.spritecollide(self.player, self.enemies, False)
             ):
                 self.player.die()
+                self.deaths += 1
 
         # xử lý chết
         if self.player.dead:
@@ -150,23 +156,51 @@ class LevelManager:
         # ⭐⭐⭐ SỬA DUY NHẤT Ở ĐÂY ⭐⭐⭐
         if pygame.sprite.spritecollide(self.player, self.goals, False):
 
-            self.score += 100  # ⭐ cộng điểm
             self.level += 1
 
             path = os.path.join(self.level_folder, f"level_{self.level}.json")
 
+            if self.level > self.max_level_unlocked:
+                self.max_level_unlocked = self.level
+            
             # nếu hết level -> WIN
             if not os.path.exists(path):
-                print("🎉 WIN GAME")
+                print(" WIN GAME")
 
-                save_player_score(self.player_name, self.score)
+                save_progress(self.player_name, self.level, self.deaths)
 
-                # reset game
-                self.level = 0
-                self.score = 0
-                self.load_level(self.level)
-            else:
-                self.load_level(self.level)
+                self.game_won = True   # ⭐ đánh dấu thắng
+                return
+            self.load_level(self.level)
+    def handle_win_input(self, event):
+
+        if event.type == pygame.KEYDOWN:
+
+            if event.key == pygame.K_UP:
+                self.win_option = (self.win_option - 1) % 3
+
+            elif event.key == pygame.K_DOWN:
+                self.win_option = (self.win_option + 1) % 3
+
+            elif event.key == pygame.K_RETURN:
+
+                # 0 = play again
+                if self.win_option == 0:
+                    self.game_won = False
+                    self.level = 0
+                    self.score = 0
+                    self.deaths = 0
+                    self.load_level(0)
+
+                # 1 = leaderboard
+                elif self.win_option == 1:
+                    return "leaderboard"
+
+                # 2 = menu
+                elif self.win_option == 2:
+                    return "menu"
+
+        return None
 
     def draw(self, screen):
         for sprite in self.all_sprites:
@@ -174,3 +208,22 @@ class LevelManager:
                 sprite.draw(screen)
             else:
                 screen.blit(sprite.image, sprite.rect)
+        if self.game_won:
+            font = pygame.font.SysFont(None, 60)
+            small = pygame.font.SysFont(None, 40)
+
+            screen.fill((0, 0, 0))
+
+            title = font.render("YOU WIN!", True, (255, 255, 0))
+            screen.blit(title, (280, 120))
+
+            options = ["Play Again", "Leaderboard", "Back to Menu"]
+
+            for i, option in enumerate(options):
+
+                color = (255,255,0) if i == self.win_option else (255,255,255)
+
+                text = small.render(option, True, color)
+                screen.blit(text, (300, 220 + i * 50))
+
+            return

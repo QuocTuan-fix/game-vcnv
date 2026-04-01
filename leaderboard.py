@@ -1,5 +1,5 @@
 import pygame
-from data_manager import get_top_players
+from firebase_manager import get_leaderboard
 
 pygame.font.init()
 FONT = pygame.font.SysFont("Arial", 35)
@@ -9,19 +9,18 @@ def show_leaderboard(screen):
     while True:
         screen.fill((200, 200, 255))
 
-        title = FONT.render("TOP PLAYERS", True, (0, 0, 0))
-        screen.blit(title, (280, 80))
+        title = FONT.render("ONLINE LEADERBOARD", True, (0, 0, 0))
+        screen.blit(title, (220, 80))
 
-        players = get_top_players()
+        #players = get_leaderboard_online()
 
         y = 150
-        rank = 1
-        for p in players:
-            text = f"{rank}. {p['name']} - {p['score']}"
+        players = get_leaderboard()
+        for i, p in enumerate(players):
+            text = f"{p['name']} - Lv {p['level']} - Deaths {p['deaths']}"
             t = FONT.render(text, True, (0, 0, 0))
             screen.blit(t, (250, y))
             y += 50
-            rank += 1
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
