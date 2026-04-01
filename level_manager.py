@@ -26,6 +26,7 @@ class LevelManager:
         self.traps = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.goals = pygame.sprite.Group()
+        self.win_sound = pygame.mixer.Sound("assets/sounds/win.mp3")
 
         self.player = Player(100, 300)
         self.all_sprites.add(self.player)
@@ -166,6 +167,7 @@ class LevelManager:
             # nếu hết level -> WIN
             if not os.path.exists(path):
                 print(" WIN GAME")
+                self.win_sound.play()
 
                 save_progress(self.player_name, self.level, self.deaths)
 
@@ -177,10 +179,10 @@ class LevelManager:
         if event.type == pygame.KEYDOWN:
 
             if event.key == pygame.K_UP:
-                self.win_option = (self.win_option - 1) % 3
+                self.win_option = (self.win_option - 1) % 2
 
             elif event.key == pygame.K_DOWN:
-                self.win_option = (self.win_option + 1) % 3
+                self.win_option = (self.win_option + 1) % 2
 
             elif event.key == pygame.K_RETURN:
 
@@ -217,7 +219,7 @@ class LevelManager:
             title = font.render("YOU WIN!", True, (255, 255, 0))
             screen.blit(title, (280, 120))
 
-            options = ["Play Again", "Leaderboard", "Back to Menu"]
+            options = ["Play Again", "Leaderboard"]
 
             for i, option in enumerate(options):
 

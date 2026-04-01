@@ -3,6 +3,7 @@ from level_manager import LevelManager
 from LevelSelect import LevelSelect
 from login_screen import login_screen
 from leaderboard import show_leaderboard
+from ui_overlay import UIOverlay
 
 
 class Game:
@@ -15,6 +16,16 @@ class Game:
 
         self.screen = pygame.display.set_mode((800, 450))
         pygame.display.set_caption("Die Again - Test")
+        pygame.mixer.init()
+
+        # nhạc nền
+        pygame.mixer.music.load("assets/sounds/bg_music.mp3")
+        pygame.mixer.music.set_volume(0.5)
+        pygame.mixer.music.play(-1)  # loop
+
+        # sound effect
+        self.jump_sound = pygame.mixer.Sound("assets/sounds/jump.mp3")
+        self.win_sound = pygame.mixer.Sound("assets/sounds/win.mp3")
 
         self.clock = pygame.time.Clock()
         self.running = True
@@ -32,6 +43,7 @@ class Game:
 
         # ===== STATE =====
         self.state = self.MENU
+        self.ui = UIOverlay()
 
         # ===== SYSTEMS =====
         self.level_select = LevelSelect(total_levels=3)
@@ -53,6 +65,7 @@ class Game:
         while self.running:
 
             for event in pygame.event.get():
+                self.ui.handle_event(event)
 
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -105,7 +118,7 @@ class Game:
             # ===== UPDATE =====
             if self.state == self.PLAYING:
                 self.level_manager.update()
-                
+            self.ui.update()
             # ===== DRAW =====
             if self.state == self.MENU:
 
@@ -119,7 +132,8 @@ class Game:
 
                 # sau đó vẽ game
                 self.level_manager.draw(self.screen)
-
+            self.ui.draw(self.screen)
+            
             pygame.display.flip()
             self.clock.tick(60)
 
