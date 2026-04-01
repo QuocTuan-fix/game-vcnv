@@ -40,6 +40,7 @@ class Player(pygame.sprite.Sprite):
         self.on_ground = False
         self.dead = False
         self.death_timer = 0
+        self.jump_sound = pygame.mixer.Sound("assets/sounds/jump.mp3")
 
     # ======================
     # PLAYER DIE
@@ -82,6 +83,8 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_SPACE] and self.on_ground:
             self.vel_y = self.jump_power
             self.on_ground = False
+            if not self.dead:
+                self.jump_sound.play()
 
         # ===== GRAVITY =====
         self.vel_y += 0.8
