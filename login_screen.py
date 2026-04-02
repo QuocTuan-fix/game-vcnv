@@ -12,13 +12,19 @@ def login_screen(screen):
     username = ""
     password = ""
 
-    active_input = "username"  # "username" hoặc "password"
+    active_input = "username"
     message = ""
 
     input_box_user = pygame.Rect(250, 180, 300, 40)
     input_box_pass = pygame.Rect(250, 260, 300, 40)
 
-    while True:
+    running = True
+
+    # ✅ trạng thái login (fix đứng)
+    logging_in = False
+    login_time = 0
+
+    while running:
         screen.fill((20, 20, 30))
 
         # ===== TITLE =====
@@ -59,44 +65,26 @@ def login_screen(screen):
 
             if event.type == pygame.KEYDOWN:
 
-                # chuyển ô
                 if event.key == pygame.K_TAB:
                     active_input = "password" if active_input == "username" else "username"
 
-                # login
                 elif event.key == pygame.K_RETURN:
 
                     if username == "" or password == "":
                         message = "Vui long nhap day du!"
                         continue
 
-                    user = login_user(username, password)
+                    # ✅ KHÔNG gọi login ngay
+                    logging_in = True
+                    login_time = pygame.time.get_ticks()
+                    message = "Dang dang nhap..."
 
-                    if user:
-                        return username, user
-
-                    else:
-                        # check user tồn tại chưa (IMPORTANT)
-                        existing_user = login_user(username, "___check___")
-
-                        if existing_user is None:
-                            # chưa có → tạo tài khoản
-                            register_user(username, password)
-                            message = "Da tao tai khoan!"
-                            return username, login_user(username, password)
-                        else:
-                            # sai mật khẩu
-                            message = "Sai mat khau, thu lai!"
-                            password = ""
-
-                # xoá ký tự
                 elif event.key == pygame.K_BACKSPACE:
                     if active_input == "username":
                         username = username[:-1]
                     else:
                         password = password[:-1]
 
-                # nhập ký tự
                 else:
                     if event.unicode.isprintable():
                         if active_input == "username":
@@ -104,4 +92,26 @@ def login_screen(screen):
                         else:
                             password += event.unicode
 
+        # ✅ xử lý login sau (tránh block)
+        if logging_in:
+            if pygame.time.get_ticks() - login_time > 200:
+                logging_in = False
+
+                user = login_user(username, password)
+
+                if user:
+                    return username, user
+                else:
+                    # 👉 check tồn tại (giữ logic bạn nhưng giảm gọi)
+                    existing_user = login_user(username, "___check___")
+
+                    if existing_user is None:
+                        register_user(username, password)
+                        message = "Da tao tai khoan!"
+                        return username, login_user(username, password)
+                    else:
+                        message = "Sai mat khau, thu lai!"
+                        password = ""
+
         pygame.display.flip()
+        pygame.time.delay(16)
