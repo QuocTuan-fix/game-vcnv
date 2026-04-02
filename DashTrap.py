@@ -2,6 +2,7 @@ import pygame
 from Enemy import Enemy
 from spritesheet import load_sprite_sheet
 from Animation import Animation
+from utils import resource_path
 
 class DashTrap(Enemy):
 
@@ -53,7 +54,7 @@ class DashTrap(Enemy):
         self.fake_timer = 0
 
         # ===== IMAGE =====
-        frames = load_sprite_sheet("assets/trap/stone.png", 64, 62)
+        frames = load_sprite_sheet(resource_path("assets/enemy/dash/stone.png"), 64, 62)
         self.image = frames[0]
         self.rect = pygame.Rect(x, 0, 40, 40)
 

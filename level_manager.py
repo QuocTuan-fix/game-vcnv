@@ -2,6 +2,7 @@
 import pygame
 import json
 import os
+import time
 
 from Player import Player
 from Trap import Spike
@@ -10,6 +11,7 @@ from PatrolEnemy import PatrolEnemy
 from DropEnemy import DropEnemy
 from ChaseEnemy import ChaseEnemy
 from DashTrap import DashTrap
+from utils import resource_path
 
 #  thêm dòng này
 from firebase_manager import save_progress
@@ -26,7 +28,7 @@ class LevelManager:
         self.traps = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.goals = pygame.sprite.Group()
-        self.win_sound = pygame.mixer.Sound("assets/sounds/win.mp3")
+        self.win_sound = pygame.mixer.Sound(resource_path("assets/sounds/win.mp3"))
 
         self.player = Player(100, 300)
         self.all_sprites.add(self.player)
@@ -78,7 +80,8 @@ class LevelManager:
                     direction=t.get("direction", "right"),
                     speed=t.get("speed", 6),
                     dash_distance=t.get("dash_distance", 120),
-                    trigger_range=t.get("trigger_range", 80)
+                    trigger_range=t.get("trigger_range", 80),
+                    enable_fake=t.get("enable_fake", False)
                 )
 
             if trap is not None:
@@ -156,7 +159,7 @@ class LevelManager:
 
         # ⭐⭐⭐ SỬA DUY NHẤT Ở ĐÂY ⭐⭐⭐
         if pygame.sprite.spritecollide(self.player, self.goals, False):
-
+            self.win_sound.play()
             self.level += 1
 
             path = os.path.join(self.level_folder, f"level_{self.level}.json")
@@ -167,13 +170,21 @@ class LevelManager:
             # nếu hết level -> WIN
             if not os.path.exists(path):
                 print(" WIN GAME")
-                self.win_sound.play()
+                
 
                 save_progress(self.player_name, self.level, self.deaths)
 
                 self.game_won = True   # ⭐ đánh dấu thắng
                 return
             self.load_level(self.level)
+
+            if not hasattr(self, "last_save_time"):
+                self.last_save_time = time.time()
+
+            if time.time() - self.last_save_time > 2:  # mỗi 2 giây lưu
+                save_progress(self.player_name, self.level, self.deaths)
+                self.last_save_time = time.time()
+                
     def handle_win_input(self, event):
 
         if event.type == pygame.KEYDOWN:
@@ -210,22 +221,55 @@ class LevelManager:
                 sprite.draw(screen)
             else:
                 screen.blit(sprite.image, sprite.rect)
+
         if self.game_won:
-            font = pygame.font.SysFont(None, 60)
-            small = pygame.font.SysFont(None, 40)
 
-            screen.fill((0, 0, 0))
+            # ===== OVERLAY =====
+            overlay = pygame.Surface((800, 450))
+            overlay.set_alpha(180)
+            overlay.fill((0, 0, 0))
+            screen.blit(overlay, (0, 0))
 
-            title = font.render("YOU WIN!", True, (255, 255, 0))
-            screen.blit(title, (280, 120))
+            # ===== FONT =====
+            title_font = pygame.font.SysFont("arial", 60)
+            text_font = pygame.font.SysFont("arial", 30)
 
+            # ===== BOX =====
+            box = pygame.Rect(200, 100, 400, 250)
+            pygame.draw.rect(screen, (30, 30, 50), box, border_radius=15)
+            pygame.draw.rect(screen, (255, 255, 0), box, 3, border_radius=15)
+
+            # ===== TITLE =====
+            title = title_font.render("YOU WIN!", True, (255, 255, 0))
+            screen.blit(title, (260, 120))
+
+            # ===== STATS =====
+            stats1 = text_font.render(f"Deaths: {self.deaths}", True, (255,255,255))
+            stats2 = text_font.render(f"Level Reached: {self.level}", True, (255,255,255))
+
+            screen.blit(stats1, (320, 180))
+            screen.blit(stats2, (280, 210))
+
+            # ===== OPTIONS =====
             options = ["Play Again", "Leaderboard"]
 
             for i, option in enumerate(options):
 
-                color = (255,255,0) if i == self.win_option else (255,255,255)
+                if i == self.win_option:
+                    color = (255, 255, 0)
+                    scale = 1.2
+                else:
+                    color = (255, 255, 255)
+                    scale = 1.0
 
-                text = small.render(option, True, color)
-                screen.blit(text, (300, 220 + i * 50))
+                text = text_font.render(option, True, color)
+
+                # scale effect
+                text = pygame.transform.scale(
+                    text,
+                    (int(text.get_width() * scale), int(text.get_height() * scale))
+                )
+
+                screen.blit(text, (320, 260 + i * 50))
 
             return

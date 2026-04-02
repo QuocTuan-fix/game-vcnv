@@ -2,6 +2,7 @@ import pygame
 from Enemy import Enemy
 from spritesheet import load_sprite_sheet
 from Animation import Animation
+from utils import resource_path
 
 
 class PatrolEnemy(Enemy):
@@ -9,12 +10,12 @@ class PatrolEnemy(Enemy):
     def __init__(self, x, y, left_limit, right_limit, speed=2):
         super().__init__(x, y)
 
-        self.rect = pygame.Rect(x, y, 8, 8)
+        self.rect = pygame.Rect(x, y, 70, 35)
         self.rect.bottom = 280
 
         self.animation = Animation(
-            load_sprite_sheet("assets/enemy/patrol/Bat.png", 16, 16),
-            speed=0.2
+            load_sprite_sheet(resource_path("assets/enemy/patrol/Bat.png"), 16, 16),
+            speed=0.8
         )
 
         self.image = self.animation.get()
@@ -32,10 +33,11 @@ class PatrolEnemy(Enemy):
 
         self.animation.update()
         self.image = self.animation.get()
+        self.image = pygame.transform.smoothscale(self.image, (40, 40)) 
 
     def draw(self, screen):
 
-        draw_x = self.rect.x - 8
-        draw_y = self.rect.y - 8
+        draw_x = self.rect.x - 2
+        draw_y = self.rect.y - 2
 
         screen.blit(self.image, (draw_x, draw_y))

@@ -1,0 +1,24 @@
+{
+    "player_start": [50, 280],
+  
+    "traps": [
+      {"type": "spike", "x": 100, "y": 0},
+  
+      {"type": "dash", "x": 240, "y": 0, "speed": 1, "dash_distance": 130},
+  
+      {"type": "spike", "x": 360, "y": 0},
+  
+      {"type": "dash", "x": 500, "y": 0, "direction": "left", "speed": 2},
+  
+      {"type": "spike", "x": 650, "y": 0}
+    ],
+  
+    "enemies": [
+      {"type": "drop", "x": 300, "y": 0},
+      {"type": "drop", "x": 580, "y": 0}
+    ],
+  
+    "goals": [
+        {"type": "goal", "x": 600, "y": 365 }
+      ]
+  }

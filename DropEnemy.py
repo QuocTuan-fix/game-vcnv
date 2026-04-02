@@ -2,6 +2,7 @@ from Enemy import Enemy
 import pygame
 from spritesheet import load_sprite_sheet
 from Animation import Animation
+from utils import resource_path
 
 
 class DropEnemy(Enemy):
@@ -22,12 +23,12 @@ class DropEnemy(Enemy):
         self.x_tolerance = 20
 
         # ===== ANIMATION =====
-        frames = load_sprite_sheet("assets/enemy/drop/fire.png", 40, 123)
+        frames = load_sprite_sheet(resource_path("assets/enemy/drop/fire.png"), 40, 123)
 
         # scale riêng cho drop enemy
         frames = [pygame.transform.scale(f, (25, 70)) for f in frames]
 
-        self.animation = Animation(frames, speed=6)
+        self.animation = Animation(frames, speed=3)
 
     # =========================
     # UPDATE

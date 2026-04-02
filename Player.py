@@ -1,6 +1,7 @@
 import pygame
 from spritesheet import load_sprite_sheet
 from Animation import Animation
+from utils import resource_path
 
 
 class Player(pygame.sprite.Sprite):
@@ -14,17 +15,17 @@ class Player(pygame.sprite.Sprite):
         # ===== ANIMATION =====
         self.animations = {
 
-            "idle": Animation(load_sprite_sheet(
-                "assets/player/Idle.png", 64, 64)),
+            "idle": Animation(load_sprite_sheet(resource_path(
+                "assets/player/Idle.png"), 64, 64)),
 
-            "run": Animation(load_sprite_sheet(
-                "assets/player/Walk.png", 64, 64)),
+            "run": Animation(load_sprite_sheet(resource_path(
+                "assets/player/Walk.png"), 64, 64)),
 
-            "jump": Animation(load_sprite_sheet(
-                "assets/player/JumpFallLand.png", 64, 64)),
+            "jump": Animation(load_sprite_sheet(resource_path(
+                "assets/player/JumpFallLand.png"), 64, 64)),
 
-            "death": Animation(load_sprite_sheet(
-                "assets/player/Death.png", 64, 64),speed=6,loop=False)
+            "death": Animation(load_sprite_sheet(resource_path(
+                "assets/player/Death.png"), 64, 64),speed=6,loop=False)
         }
         self.prev_state = "idle"
         self.state = "idle"
@@ -35,12 +36,12 @@ class Player(pygame.sprite.Sprite):
         self.vel_y = 0
 
         self.speed = 8
-        self.jump_power = -15
+        self.jump_power = -13
 
         self.on_ground = False
         self.dead = False
         self.death_timer = 0
-        self.jump_sound = pygame.mixer.Sound("assets/sounds/jump.mp3")
+        self.jump_sound = pygame.mixer.Sound(resource_path("assets/sounds/jump.ogg"))
 
     # ======================
     # PLAYER DIE
@@ -93,8 +94,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.y += self.vel_y
 
         # ===== GROUND =====
-        if self.rect.bottom >= 322:
-            self.rect.bottom = 322
+        if self.rect.bottom >= 320:
+            self.rect.bottom = 320
             self.vel_y = 0
             self.on_ground = True
 
@@ -122,7 +123,7 @@ class Player(pygame.sprite.Sprite):
         anim.update()
 
         frame = anim.get()
-        self.image = pygame.transform.smoothscale(frame, (86, 86)) 
+        self.image = pygame.transform.smoothscale(frame, (75, 75)) 
 
     # ======================
     # DRAW
@@ -131,7 +132,7 @@ class Player(pygame.sprite.Sprite):
     def draw(self, screen):
 
         # sprite lớn hơn hitbox
-        draw_x = self.rect.x - 32
-        draw_y = self.rect.y - 32
+        draw_x = self.rect.x - 26
+        draw_y = self.rect.y - 26
 
         screen.blit(self.image, (draw_x, draw_y))

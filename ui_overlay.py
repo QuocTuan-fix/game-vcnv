@@ -1,5 +1,5 @@
 import pygame
-
+from utils import resource_path
 class UIOverlay:
 
     def __init__(self):
@@ -7,9 +7,9 @@ class UIOverlay:
         self.font = pygame.font.SysFont(None, 28)
 
         # ===== LOAD ICON =====
-        self.sound_on_img = pygame.image.load("assets/sounds/soundon.png").convert_alpha()
-        self.sound_off_img = pygame.image.load("assets/sounds/soundoff.png").convert_alpha()
-        self.help_img = pygame.image.load("assets/sounds/help.png").convert_alpha()
+        self.sound_on_img = pygame.image.load(resource_path("assets/sounds/soundon.png")).convert_alpha()
+        self.sound_off_img = pygame.image.load(resource_path("assets/sounds/soundoff.png")).convert_alpha()
+        self.help_img = pygame.image.load(resource_path("assets/sounds/help.png")).convert_alpha()
 
         # scale gốc
         self.base_size = 40

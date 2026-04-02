@@ -1,0 +1,19 @@
+{
+    "player_start": [50, 280],
+  
+    "traps": [
+      {"type": "spike", "x": 200, "y": 0},
+      {"type": "spike", "x": 220, "y": 0},
+  
+      {"type": "dash", "x": 300, "y": 0, "enable_fake": true},
+      {"type": "dash", "x": 500, "y": 0, "enable_fake": true}
+    ],
+  
+    "enemies": [
+      {"type": "drop", "x": 350, "y": 0}
+    ],
+  
+    "goals": [
+      {"type": "goal", "x": 600, "y": 365 }
+    ]
+  }

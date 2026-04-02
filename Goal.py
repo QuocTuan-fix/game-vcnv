@@ -1,11 +1,12 @@
 import pygame
 from spritesheet import load_sprite_sheet
+from utils import resource_path
 
 class Goal(pygame.sprite.Sprite):
 
     def __init__(self, x, y):
         super().__init__()
-        frames = load_sprite_sheet("assets/gate/gate.png", 64, 64)
+        frames = load_sprite_sheet(resource_path("assets/gate/gate.png"), 64, 64)
 
         self.image = pygame.transform.scale(frames[0], (39, 64))
         self.rect = self.image.get_rect(topleft=(x, y))
