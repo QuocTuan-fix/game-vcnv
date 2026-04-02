@@ -15,11 +15,8 @@ class LevelSelect:
 
         # layout
         self.columns = 3
-        self.spacing_x = 180
-        self.spacing_y = 100
-
-        # animation
-        self.scale = 1.0
+        self.spacing_x = 40
+        self.spacing_y = 30
 
     def count_levels(self):
         count = 0
@@ -30,6 +27,7 @@ class LevelSelect:
             else:
                 break
         return count
+
     def handle_event(self, event):
 
         if event.type == pygame.KEYDOWN:
@@ -56,22 +54,53 @@ class LevelSelect:
 
         screen.fill((15, 15, 25))
 
+        screen_w, screen_h = screen.get_size()
+
         # ===== TITLE =====
         title = self.title_font.render("SELECT LEVEL", True, (255, 255, 255))
-        screen.blit(title, (220, 40))
+        title_rect = title.get_rect(center=(screen_w // 2, 60))
+        screen.blit(title, title_rect)
 
-        start_x = 140
-        start_y = 120
+        # ===== GRID SETUP =====
+        rows = math.ceil(self.total_levels / self.columns)
 
+        # base size
+        box_w, box_h = 120, 60
+
+        # total grid size
+        grid_width = self.columns * box_w + (self.columns - 1) * self.spacing_x
+        grid_height = rows * box_h + (rows - 1) * self.spacing_y
+
+        # ===== AUTO SCALE nếu quá cao =====
+        max_height = screen_h - 150
+
+        if grid_height > max_height:
+            scale_factor = max_height / grid_height
+            box_w *= scale_factor
+            box_h *= scale_factor
+            spacing_x = self.spacing_x * scale_factor
+            spacing_y = self.spacing_y * scale_factor
+        else:
+            spacing_x = self.spacing_x
+            spacing_y = self.spacing_y
+
+        # ===== CENTER GRID =====
+        grid_width = self.columns * box_w + (self.columns - 1) * spacing_x
+        grid_height = rows * box_h + (rows - 1) * spacing_y
+
+        start_x = (screen_w - grid_width) // 2
+        start_y = (screen_h - grid_height) // 2 + 40
+
+        # ===== DRAW LEVELS =====
         for i in range(self.total_levels):
 
             col = i % self.columns
             row = i // self.columns
 
-            x = start_x + col * self.spacing_x
-            y = start_y + row * self.spacing_y
+            x = start_x + col * (box_w + spacing_x)
+            y = start_y + row * (box_h + spacing_y)
 
-            rect = pygame.Rect(x, y, 120, 60)
+            rect = pygame.Rect(x, y, box_w, box_h)
 
             # ===== STYLE =====
             if i <= self.max_unlocked:
@@ -81,20 +110,19 @@ class LevelSelect:
                 color = (30, 30, 30)
                 border = (100, 100, 100)
 
-            # SELECTED EFFECT
+            # ===== SELECT EFFECT =====
             if i == self.selected:
                 border = (255, 255, 0)
                 scale = 1.1
             else:
                 scale = 1.0
 
-            # SCALE EFFECT
             scaled_rect = rect.inflate(
                 rect.width * (scale - 1),
                 rect.height * (scale - 1)
             )
 
-            # DRAW BOX
+            # ===== DRAW BOX =====
             pygame.draw.rect(screen, color, scaled_rect, border_radius=10)
             pygame.draw.rect(screen, border, scaled_rect, 3, border_radius=10)
 
@@ -105,6 +133,8 @@ class LevelSelect:
 
             # ===== LOCK ICON =====
             if i > self.max_unlocked:
-                lock_text = self.font.render("🔒", True, (200, 200, 200))
-                lock_rect = lock_text.get_rect(center=(scaled_rect.centerx, scaled_rect.centery + 20))
+                lock_text = self.font.render("", True, (200, 200, 200))
+                lock_rect = lock_text.get_rect(
+                    center=(scaled_rect.centerx, scaled_rect.centery + 18)
+                )
                 screen.blit(lock_text, lock_rect)
